@@ -12,7 +12,10 @@ public class MainManager : MonoBehaviour
 
     public Text ScoreText;
     public GameObject GameOverText;
-    
+
+    public Text HighScore;
+
+
     private bool m_Started = false;
     private int m_Points;
     
@@ -22,6 +25,14 @@ public class MainManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        if (RealManager.Instance.playerNameHigh != "")
+        {
+            HighScore.text = string.Format("Highscore : {0} : {1}", RealManager.Instance.playerNameHigh, RealManager.Instance.playerHighScore);
+        }
+        else
+        {
+            HighScore.text = "Pico pal que lee";
+        }
         const float step = 0.6f;
         int perLine = Mathf.FloorToInt(4.0f / step);
         
@@ -59,6 +70,7 @@ public class MainManager : MonoBehaviour
             {
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
             }
+
         }
     }
 
@@ -66,10 +78,18 @@ public class MainManager : MonoBehaviour
     {
         m_Points += point;
         ScoreText.text = $"Score : {m_Points}";
+        if (m_Points > RealManager.Instance.playerHighScore)
+        {
+            RealManager.Instance.playerHighScore = m_Points;
+            RealManager.Instance.playerNameHigh = RealManager.Instance.playerName;
+            HighScore.text = string.Format("Highscore : {0} : {1}", RealManager.Instance.playerNameHigh, RealManager.Instance.playerHighScore);
+        }
+        //HighScore.text = RealManager.Instance.playerNameHigh + ":" + RealManager.Instance.playerHighScore;
     }
 
     public void GameOver()
     {
+        RealManager.Instance.SavePlayerData();
         m_GameOver = true;
         GameOverText.SetActive(true);
     }
